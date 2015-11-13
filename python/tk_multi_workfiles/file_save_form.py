@@ -308,11 +308,15 @@ class FileSaveForm(FileFormBase):
         if version_is_used:
             # version is used so we need to find the latest version - this means 
             # searching for files...
-
+            
             # need a file key to find all versions so lets build it:
             file_key = FileItem.build_file_key(fields, env.work_template, 
                                                env.version_compare_ignore_fields)
 
+            """
+            Original Code lives in this commented block.
+            --------------------------------------------
+            
             file_versions = None
             if self._file_model:
                 file_versions = self._file_model.get_cached_file_versions(file_key, env, clean_only=True)
@@ -330,7 +334,28 @@ class FileSaveForm(FileFormBase):
 
             max_version = max(file_versions or [0])
             next_version = max_version + 1
+            """
+            
+            # New clunky code to get all the version numbers across all work areas. 
+            # We can optimize later once we know it works.
+            # We're ignoring sg_step_short_name so we can get version numbers across all work areas,
+            # but we still want to be able to split out the files we present to the artists elsewhere.
+            # sg_step_short_name is hard-coded in for now so we can get to work, but 
+            # ideally we'd move it into the settings.
+            # Now Let's get matches for all our work files and publish files:
+            try:
+                file_versions = []
+                for template in [env.work_template, env.publish_template]:
+                    
+                    paths = app.sgtk.paths_from_template(template, fields, ['sg_step_short_name'] )
+                    file_versions += [template.get_fields(path)['version'] for path in paths]
+                
+            except TankError, e:
+                raise TankError("Failed to find files for this work area: %s" % e)
 
+            max_version = max(file_versions or [0])
+            next_version = max_version + 1
+                
             # update version:
             version = next_version if use_next_version else max(version, next_version)
             fields["version"] = version
