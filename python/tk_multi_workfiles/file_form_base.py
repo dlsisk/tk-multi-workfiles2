@@ -18,8 +18,8 @@ from itertools import chain
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 
-shotgun_data = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_data")
-BackgroundTaskManager = shotgun_data.BackgroundTaskManager
+task_manager = sgtk.platform.import_framework("tk-framework-shotgunutils", "task_manager")
+BackgroundTaskManager = task_manager.BackgroundTaskManager
 
 shotgun_model = sgtk.platform.import_framework("tk-framework-shotgunutils", "shotgun_model")
 ShotgunEntityModel = shotgun_model.ShotgunEntityModel
@@ -231,6 +231,10 @@ class FileFormBase(QtGui.QWidget):
 
         :param checked:    True if the refresh action is checked - ignored
         """
+        app = sgtk.platform.current_bundle()
+        app.log_debug("Synchronizing remote path cache...")
+        app.sgtk.synchronize_filesystem_structure()
+        app.log_debug("Path cache up to date!")
         self._refresh_all_async()
 
     def _refresh_all_async(self):
