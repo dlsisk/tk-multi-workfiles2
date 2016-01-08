@@ -343,7 +343,6 @@ class FileSaveForm(FileFormBase):
         if version_is_used:
             # version is used so we need to find the latest version - this means 
             # searching for files...
-<<<<<<< HEAD
             
             # need a file key to find all versions so lets build it:
             file_key = FileItem.build_file_key(fields, env.work_template, 
@@ -353,11 +352,9 @@ class FileSaveForm(FileFormBase):
             Original Code lives in this commented block.
             --------------------------------------------
             
-=======
             # need a file key to find all versions so lets build it:
             file_key = FileItem.build_file_key(fields, env.work_template, 
                                                env.version_compare_ignore_fields)
->>>>>>> refs/remotes/shotgunsoftware/master
             file_versions = None
             if self._file_model:
                 file_versions = self._file_model.get_cached_file_versions(file_key, env, clean_only=True)
